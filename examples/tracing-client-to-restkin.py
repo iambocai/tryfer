@@ -20,6 +20,7 @@ from twisted.internet import reactor
 from twisted.web.client import Agent
 from twisted.python import log
 from tryfer.tracers import push_tracer, EndAnnotationTracer, RESTkinHTTPTracer
+from tryfer.trace import Endpoint
 
 from tryfer.http import TracingAgent
 
@@ -42,7 +43,9 @@ if __name__ == '__main__':
         # The Agent API is composable so we wrap an Agent in a TracingAgent
         # and every call to TracingAgent.request will result in a client_send,
         # client_receive, and http.uri annotations.
-        a = TracingAgent(Agent(reactor))
+        # to used with zipkin ui, endpoint must be set
+        endpoint = Endpoint(ipv4='127.0.0.1', port=1582, service_name="tryfer-example")
+        a = TracingAgent(Agent(reactor), endpoint=endpoint)
         d = a.request('GET', 'http://google.com')
 
         # Print the response code when receive the response.
